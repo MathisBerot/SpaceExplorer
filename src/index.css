@@ -511,7 +511,7 @@ h1 {
     margin: 0 -1.5rem -1.5rem;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
-    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(2.4rem + env(safe-area-inset-bottom, 0px));
   }
 
   .planet-description {
@@ -602,7 +602,7 @@ h1 {
     pointer-events: auto;
     background: linear-gradient(180deg, transparent 0%, rgba(2, 3, 9, 0.75) 30%, rgba(2, 3, 9, 0.95) 100%);
     margin: 0 -1.5rem -1.5rem;
-    padding: 1.5rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    padding: 1.5rem 1.5rem calc(2.6rem + env(safe-area-inset-bottom, 0px));
   }
 
   .intro-content--phase-1 .intro-description {
