@@ -1,9 +1,11 @@
 import { useTexture } from '@react-three/drei'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { useRef } from 'react'
 
 export function Planet({ planet }) {
   const planetRef = useRef()
+  const { size } = useThree()
+  const isMobile = size.width <= 768
   const textures = useTexture(
     planet.bumpMap ? [planet.texture, planet.bumpMap] : [planet.texture],
   )
@@ -11,6 +13,7 @@ export function Planet({ planet }) {
   const bumpMap = textures[1] ?? null
 
   useFrame((_, delta) => {
+    if (!planetRef.current) return
     if (planet.isStar) {
       planetRef.current.rotation.y = 0.2 + (performance.now() / 1000) * 0.12
       return
@@ -20,7 +23,12 @@ export function Planet({ planet }) {
   })
 
   return (
-    <mesh ref={planetRef} position={planet.position} rotation={[0.08, 0.2, 0]}>
+    <mesh
+      ref={planetRef}
+      position={planet.position}
+      rotation={[0.08, 0.2, 0]}
+      scale={isMobile ? 0.42 : 1}
+    >
       <sphereGeometry args={[planet.radius, 64, 64]} />
       <meshStandardMaterial
         map={texture}

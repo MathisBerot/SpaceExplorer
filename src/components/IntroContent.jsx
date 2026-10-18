@@ -16,19 +16,23 @@ export function IntroContent({ phase }) {
 
   return (
     <section className={`intro-content intro-content--phase-${phase}`}>
-      <p className="intro-eyebrow">{current.eyebrow}</p>
-      <h1>{current.title}</h1>
-      <p className="intro-description">{current.description}</p>
-      {current.facts && (
-        <dl className="intro-facts">
-          {current.facts.map(([label, value]) => (
-            <div key={label}>
-              <dt>{label}</dt>
-              <dd>{value}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
+      <div className="intro-header">
+        {current.eyebrow && <p className="intro-eyebrow">{current.eyebrow}</p>}
+        <h1>{current.title}</h1>
+      </div>
+      <div className="intro-details">
+        <p className="intro-description">{current.description}</p>
+        {current.facts && (
+          <dl className="intro-facts">
+            {current.facts.map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </div>
     </section>
   )
 }

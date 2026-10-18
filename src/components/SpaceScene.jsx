@@ -1,4 +1,4 @@
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import { Suspense } from 'react'
 import { CameraController } from './CameraController'
 import { GalaxyBackground } from './GalaxyBackground'
@@ -8,8 +8,11 @@ import { Meteors } from './Meteors'
 import { celestialBodies } from '../data/planets'
 
 function SceneFallback({ body }) {
+  const { size } = useThree()
+  const isMobile = size.width <= 768
+
   return (
-    <mesh position={body.position}>
+    <mesh position={body.position} scale={isMobile ? 0.42 : 1}>
       <sphereGeometry args={[body.radius, 48, 48]} />
       <meshStandardMaterial
         color={body.isStar ? '#f08a28' : '#8f99ad'}

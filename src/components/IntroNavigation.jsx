@@ -5,11 +5,11 @@ export function IntroNavigation({ phase, onStep, disabled = false }) {
   const locked = useRef(false)
 
   useEffect(() => {
-    const handleWheel = (event) => {
-      event.preventDefault()
-      if (disabled || locked.current) return
+    let touchStartX = 0
+    let touchStartY = 0
 
-      const direction = event.deltaY > 0 ? 1 : -1
+    const triggerStep = (direction) => {
+      if (disabled || locked.current) return
       if (direction < 0 && phase === 0) {
         return
       }
@@ -21,8 +21,45 @@ export function IntroNavigation({ phase, onStep, disabled = false }) {
       }, 650)
     }
 
+    const handleWheel = (event) => {
+      event.preventDefault()
+      const direction = event.deltaY > 0 ? 1 : -1
+      triggerStep(direction)
+    }
+
+    const handleTouchStart = (event) => {
+      if (event.touches.length === 1) {
+        touchStartX = event.touches[0].clientX
+        touchStartY = event.touches[0].clientY
+      }
+    }
+
+    const handleTouchEnd = (event) => {
+      if (disabled || locked.current || event.changedTouches.length === 0) return
+      const touchEndX = event.changedTouches[0].clientX
+      const touchEndY = event.changedTouches[0].clientY
+
+      const diffX = touchStartX - touchEndX
+      const diffY = touchStartY - touchEndY
+
+      const isHorizontal = Math.abs(diffX) > Math.abs(diffY)
+      const diff = isHorizontal ? diffX : diffY
+
+      const minSwipeDistance = 35
+      if (Math.abs(diff) >= minSwipeDistance) {
+        const direction = diff > 0 ? 1 : -1
+        triggerStep(direction)
+      }
+    }
+
     window.addEventListener('wheel', handleWheel, { passive: false })
-    return () => window.removeEventListener('wheel', handleWheel)
+    window.addEventListener('touchstart', handleTouchStart, { passive: true })
+    window.addEventListener('touchend', handleTouchEnd, { passive: true })
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('touchstart', handleTouchStart)
+      window.removeEventListener('touchend', handleTouchEnd)
+    }
   }, [disabled, onStep, phase])
 
   return <ScrollHint />

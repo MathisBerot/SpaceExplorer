@@ -11,7 +11,8 @@ const orbitAngles = [0.4, 2.8, 1.25, 4.65, 5.9, 2.15, 3.55, 5.15]
 const earthOrbitSpeed = 0.006
 
 function IntroCamera({ phase, startingFromBody }) {
-  const { camera } = useThree()
+  const { camera, size } = useThree()
+  const isMobile = size.width <= 768
   const target = useRef(new THREE.Vector3())
   const hasInitialized = useRef(false)
 
@@ -22,15 +23,21 @@ function IntroCamera({ phase, startingFromBody }) {
         target: new THREE.Vector3(0, -2, 0),
       },
       {
-        position: new THREE.Vector3(0, 13, 11),
+        position: isMobile
+          ? new THREE.Vector3(0, 14, 11)
+          : new THREE.Vector3(0, 13, 11),
         target: new THREE.Vector3(0, -2, 0),
       },
       {
-        position: new THREE.Vector3(3.8, 0.4, 36.2),
-        target: new THREE.Vector3(3.8, 0, 30),
+        position: isMobile
+          ? new THREE.Vector3(3.8, 0.15, 36.2)
+          : new THREE.Vector3(3.8, 0.4, 36.2),
+        target: isMobile
+          ? new THREE.Vector3(3.8, -0.45, 30)
+          : new THREE.Vector3(3.8, 0, 30),
       },
     ],
-    [],
+    [isMobile],
   )
 
   useFrame((_, delta) => {
@@ -57,13 +64,21 @@ function IntroCamera({ phase, startingFromBody }) {
 function IntroSun() {
   const texture = useTexture(sun.texture)
   const sunRef = useRef()
+  const { size } = useThree()
+  const isMobile = size.width <= 768
 
   useFrame(() => {
+    if (!sunRef.current) return
     sunRef.current.rotation.y = 0.2 + (performance.now() / 1000) * 0.12
   })
 
   return (
-    <mesh ref={sunRef} position={[0, 0, 0]} rotation={[0.08, 0.2, 0]}>
+    <mesh
+      ref={sunRef}
+      position={[0, 0, 0]}
+      rotation={[0.08, 0.2, 0]}
+      scale={isMobile ? 0.42 : 1}
+    >
       <sphereGeometry args={[sun.radius, 64, 64]} />
       <meshStandardMaterial
         map={texture}
@@ -76,10 +91,15 @@ function IntroSun() {
 }
 
 function IntroSceneFallback({ startingFromBody }) {
+  const { size } = useThree()
+  const isMobile = size.width <= 768
   const position = startingFromBody === 'neptune' ? [3.8, 0, -210] : [3.8, 0, 30]
 
   return (
-    <mesh position={startingFromBody ? position : [0, -2, 0]}>
+    <mesh
+      position={startingFromBody ? position : [0, -2, 0]}
+      scale={isMobile ? 0.42 : 1}
+    >
       <sphereGeometry args={[sun.radius, 64, 64]} />
       <meshStandardMaterial
         color="#f08a28"
@@ -150,7 +170,8 @@ function OrbitRing({ radius, visible }) {
 
 function OrbitLabel({ planet, radius, index, visible }) {
   const labelRef = useRef()
-  const { camera } = useThree()
+  const { camera, size } = useThree()
+  const isMobile = size.width <= 768
   const angle = orbitAngles[index]
   const position = [
     Math.cos(angle) * radius,
@@ -167,7 +188,7 @@ function OrbitLabel({ planet, radius, index, visible }) {
       ref={labelRef}
       position={position}
       color="#ffffff"
-      fontSize={0.16}
+      fontSize={isMobile ? 0.24 : 0.18}
       anchorX="center"
       anchorY="middle"
       fillOpacity={visible ? 0.72 : 0}
@@ -183,6 +204,9 @@ function OrbitLabel({ planet, radius, index, visible }) {
 
 function IntroSystem({ phase, startingFromBody }) {
   const systemRef = useRef()
+  const { size } = useThree()
+  const isMobile = size.width <= 768
+
   const targetPosition = useMemo(
     () => new THREE.Vector3(3.8, 0, 30),
     [],
@@ -191,15 +215,32 @@ function IntroSystem({ phase, startingFromBody }) {
   const initialPosition =
     startingFromBody === 'neptune' ? [3.8, 0, -210] : [0, -2, 0]
 
+  const targetScale = useMemo(() => {
+    if (phase === 1) {
+      return isMobile ? 0.58 : 0.60
+    }
+    return 1
+  }, [phase, isMobile])
+
   useFrame((_, delta) => {
     const destination = phase === 2 ? targetPosition : startPosition
     systemRef.current.position.lerp(destination, 1 - Math.exp(-3.2 * delta))
+
+    const currentScale = systemRef.current.scale.x
+    const newScale = THREE.MathUtils.damp(
+      currentScale,
+      targetScale,
+      4.0,
+      delta,
+    )
+    systemRef.current.scale.set(newScale, newScale, newScale)
   })
 
   return (
     <group
       ref={systemRef}
-      position={      startingFromBody ? initialPosition : [0, -2, 0]}
+      position={startingFromBody ? initialPosition : [0, -2, 0]}
+      scale={targetScale}
     >
       <IntroSun />
       {planets.map((planet, index) => (
