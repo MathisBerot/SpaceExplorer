@@ -217,7 +217,7 @@ function IntroSystem({ phase, startingFromBody }) {
 
   const targetScale = useMemo(() => {
     if (phase === 1) {
-      return isMobile ? 0.58 : 0.60
+      return isMobile ? 0.58 : 0.8
     }
     return 1
   }, [phase, isMobile])

@@ -3,7 +3,7 @@ const textureRoot =
 
 const sharedPosition = (index) => [3.8, 0, -index * 30]
 const displayRadius = 1.6
-
+const ringRadius = 1.15
 export const sun = {
   id: 'sun',
   name: 'Soleil',
@@ -129,8 +129,13 @@ const planetData = [
     ],
     texture: `${textureRoot}/saturnmap.jpg`,
     orbitalPeriod: 29.45,
-    radius: displayRadius,
-    ring: true,
+    radius: ringRadius,
+    axialTilt: [0.38, 0.08, 0.42],
+    ring: {
+      innerRadius: ringRadius * 1.22,
+      outerRadius: ringRadius * 2.38,
+      rotationSpeed: 200,
+    },
   },
   {
     id: 'uranus',
@@ -147,8 +152,13 @@ const planetData = [
     ],
     texture: `${textureRoot}/uranusmap.jpg`,
     orbitalPeriod: 84,
-    radius: displayRadius,
-    ring: true,
+    radius: ringRadius,
+    axialTilt: [0.38, 0.08, 0.42],
+    ring: {
+      innerRadius: ringRadius * 1.40,
+      outerRadius: ringRadius * 2.15,
+      rotationSpeed: 0.012,
+    },
   },
   {
     id: 'neptune',

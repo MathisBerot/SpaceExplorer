@@ -59,7 +59,7 @@ export function PlanetBreadcrumbs({
                 <span className="breadcrumb-number">
                   {planet.displayNumber ?? String(index).padStart(2, '0')}
                 </span>
-                <PlanetIcon ringed={planet.ring} />
+                <PlanetIcon ringed={Boolean(planet.ring)} />
                 <span className="breadcrumb-name">{planet.name}</span>
               </button>
             </li>
